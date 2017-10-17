@@ -47,4 +47,4 @@ node bamazonSupervisor.js
       Exit
 
 ## Screenshot
-see [Demo Images] (https://github.com/gitKendra/bamazon/tree/master/demo_images) for screenshots of the various functions of each program
+see [Demo Images](https://github.com/gitKendra/bamazon/tree/master/demo_images) for screenshots of the various functions of each program
