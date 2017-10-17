@@ -1,5 +1,6 @@
 var inquirer = require('inquirer');
 var mysql      = require('mysql');
+var Table = require('cli-table2');
 
 var connection = mysql.createConnection({
   host     : 'localhost', //'127.0.0.1' or 'localhost'
@@ -11,12 +12,11 @@ var connection = mysql.createConnection({
  
 connection.connect(function(err){
 	if (err) throw err;
-	// call first function
 	displayMenu();
 });
 
 
-// List a set of menu options:
+// Display menu options:
 function displayMenu(){
 	console.log("---------------------------");
 	console.log("Choose an option:");
@@ -43,22 +43,26 @@ function displayMenu(){
 			addNewProduct();
 		}
 		else{
-			connection.end();
-			process.exit(0);
+			exit();
 		}
 	});
 }
 
-// View Products for Sale : list every available item: the item IDs, names, prices, and quantities.
+// Function to View Products for Sale. Lists every available item: the item IDs, names, prices, and quantities.
 function listProducts(){
 	connection.query('SELECT * FROM products;', function(err, res){
 		console.log("All Products for sale:");
-		console.log("---------------------------");
-	//	console.log(res);
+		// Instantiate a table
+		var table = new Table({
+		    head: ['Product ID', 'Product Name', 'Quantity', 'Price']
+		});
+		// Add rows to table
 		for(key in res){
-			console.log("Item #: " + res[key].item_id + "\nName: "+ res[key].product_name + "\nQty: "+ res[key].stock_quantity+ "\nPrice: $" + res[key].price);
-			console.log("---------------------------");
-		}	
+			table.push([res[key].item_id, res[key].product_name, res[key].stock_quantity, "$" + res[key].price.toFixed(2)]);
+		}
+		// Print table
+		console.log(table.toString());
+	
 		displayMenu();
 	});
 }
@@ -66,9 +70,19 @@ function listProducts(){
 // View Low Inventory : list all items with an inventory count lower than five.
 function displayLowInventory(){
 	connection.query('SELECT product_name, stock_quantity FROM products WHERE stock_quantity < 5;', function(err, res){
+		if(err) throw err;
+		console.log("Low Inventory:");
+		// Instantiate a table
+		var table = new Table({
+		    head: ['Product Name', 'Quantity']
+		});
+		// Add rows to table
 		for(key in res){
-			console.log(res[key].product_name + " (" + res[key].stock_quantity + ")");
+			table.push([res[key].product_name, res[key].stock_quantity]);
 		}
+		// Print table
+		console.log(table.toString());
+
 		displayMenu();
 	});
 }
@@ -86,15 +100,19 @@ function addInventory(){
 	}
 	]).then(function(ans){
 		connection.query("UPDATE products SET stock_quantity = stock_quantity + ? WHERE item_id = ?", [ans.qty, ans.itemID]
-		, function(err){
-			if(err) throw err
-			console.log("Quantity updated!");
-		displayMenu();
+		, function(err, res){
+			if(err || res.affectedRows == 0){
+				console.log("Invalid input. Please check the item ID of the product for update.");
+			} 
+			else{
+				console.log("Inventory updated!");
+			}
+			displayMenu();
 		});
 	});
 }
 
-// Add New Product :  add a completely new product to the store.
+// Add New Product : add a completely new product to the store.
 function addNewProduct(){
 	inquirer.prompt([
 	{
@@ -123,8 +141,13 @@ function addNewProduct(){
 		},
 		function(err){
 			if(err) throw err
-			console.log("product inserted!");
 		});
 		displayMenu();
 	});
+}
+
+// Closes the connection to the webserver and ends program
+function exit(){
+	connection.end();
+	process.exit(0);
 }
