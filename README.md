@@ -15,8 +15,6 @@ Run program to view current inventory and to purchase product.
 node bamazonManager.js
 ```
 
-
-
 ## bamazonManager.js
 **Use:**
 Run program to be presented with the option to view products for sale, view low inventory, add more inventory to current product, add new product to store, or exit the program.
@@ -24,14 +22,6 @@ Run program to be presented with the option to view products for sale, view low 
 ```
 node bamazonManager.js
 ```
->
-    Choose an option: Choose one of the following options:
-    > View products for sale
-      View low inventory
-      Add to inventory
-      Add new product
-      Exit
-see [Manager Preview] (http://) for a screenshot of the program
 
 ## bamazonSupervisor.js
 **Use:**
@@ -40,11 +30,6 @@ Run program to be presented with the option to view product sales by department,
 ```
 node bamazonSupervisor.js
 ```
->
-    What would you like to do?
-    > View product sales by department
-      Create new department
-      Exit
 
 ## Screenshot
 see [Demo Images](https://github.com/gitKendra/bamazon/tree/master/demo_images) for screenshots of the various functions of each program
